@@ -1,64 +1,99 @@
 import sys
-import pprint
-from io import BytesIO
-# Этот класс поможет нам сделать картинку из потока байт
-
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
+from PyQt5.QtGui import QPixmap, QKeyEvent
+import PyQt5.QtGui
+from PyQt5.QtWidgets import QLineEdit
 import requests
 from PIL import Image
+from PyQt5.QtCore import Qt
+from PyQt5.uic.properties import QtGui
+
+SIZE = [1300, 900]
+SIZE_W = [300, 300]
 
 
-# Пусть наше приложение предполагает запуск:
-# python search.py Москва, ул. Ак. Королева, 12
-# Тогда запрос к геокодеру формируется следующим образом:
+class Maps_API(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.zero()
+        self.map_file = "map.png"
+        self.initUI()
+
+    def zero(self):
+        self.ll = '46.953431,55.490871'
+        self.spn = 0.05
+        self.z = '4'
+        self.map = 'map'
+
+    def initUI(self):
+        self.setGeometry(100, 100, SIZE[0], SIZE[1])
+        self.setWindowTitle('Maps API')
+        self.label = QLabel(self)
+        self.label.resize(*SIZE)
+        self.label.move(0, 0)
+        self.one_button = QPushButton('Поиск', self)
+        self.one_button.resize(60, 30)
+        self.one_button.move(10, 10)
+        self.coord = QLineEdit(self.ll, self)
+        self.coord.resize(100, 30)
+        self.coord.move(230, 10)
+        self.spn_win = QLineEdit(str(self.spn), self)
+        self.spn_win.resize(100, 30)
+        self.spn_win.move(120, 10)
+        self.one_button.clicked.connect(self.get_image)
+
+    def new_data(self):
+        self.ll = self.coord.text()
+        self.spn = float(self.spn_win.text())
+
+    def draw_map(self):
+        self.pixmap = QPixmap(self.map_file)
+        self.label.setPixmap(self.pixmap)
+
+    def keyPressEvent(self, event):
+        x, y = list(map(float, self.ll.split(',')))
+        if event.key() == Qt.Key_PageUp:
+            self.spn += float(self.spn) / 2
+        elif event.key() == Qt.Key_PageDown:
+            self.spn -= float(self.spn) / 2
+        if event.key() == Qt.Key_Up:
+            y += 0.01 * self.spn
+        elif event.key() == Qt.Key_Down:
+            y -= 0.01 * self.spn
+        elif event.key() == Qt.Key_Left:
+            x -= 0.01 * self.spn
+        elif event.key() == Qt.Key_Right:
+            x += 0.01 * self.spn
+        self.spn_win.setText(f'{self.spn}')
+        self.coord.setText(f'{x},{y}')
+        self.get_image()
+        print(self.spn)
+
+    def get_image(self):
+        self.new_data()
+        map_params = {
+            "ll": self.ll,
+            "spn": f'{self.spn},{self.spn}',
+            "l": self.map
+        }
+        print(map_params)
+        map_api_server = "http://static-maps.yandex.ru/1.x/"
+        response = requests.get(map_api_server, params=map_params)
+        if not response:
+            print("Ошибка выполнения запроса:")
+            print(map_api_server)
+            print("Http статус:", response.status_code, "(", response.reason, ")")
+            sys.exit(1)
+
+        print("Http статус:", response.status_code, "(", response.reason, ")")
+        # Запишем полученное изображение в файл.
+        with open(self.map_file, "wb") as file:
+            file.write(response.content)
+        self.draw_map()
 
 
-def get_spn(toponym_to_find):
-    geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
-
-    geocoder_params = {
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-        "geocode": toponym_to_find,
-        "format": "json"}
-
-    response = requests.get(geocoder_api_server, params=geocoder_params)
-
-    if not response:
-        # обработка ошибочной ситуации
-        pass
-
-    # Преобразуем ответ в json-объект
-    json_response = response.json()
-    toponym = json_response["response"]["GeoObjectCollection"][
-        "featureMember"][0]["GeoObject"]
-    coord1 = list(map(float, toponym['boundedBy']['Envelope']['lowerCorner'].split()))
-    coord2 = list(map(float, toponym['boundedBy']['Envelope']['upperCorner'].split()))
-    toponym_coodrinates = toponym["Point"]["pos"]
-    toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-    spn = f'{abs(coord1[0] - coord2[0]) / 2.0},{abs(coord1[1] - coord2[1]) / 2.0}'
-    ll = ",".join([toponym_longitude, toponym_lattitude])
-    return ll, spn
-
-
-def get_map(place):
-    ll, spn = get_spn(place)
-    map_params = {
-        "ll": ll,
-        "spn": spn,
-        "l": "map",
-        'pt': "{0},pm2dgl".format(ll)
-    }
-    map_api_server = "http://static-maps.yandex.ru/1.x/"
-    # ... и выполняем запрос
-    response = requests.get(map_api_server, params=map_params)
-
-    Image.open(BytesIO(
-        response.content)).show()
-
-
-
-
-if __name__ == "__main__":
-    toponym_to_find = " ".join(sys.argv[1:])
-    if not toponym_to_find:
-        toponym_to_find = input('Введите объект для поиска: ')
-    get_map(toponym_to_find)
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Maps_API()
+    ex.show()
+    sys.exit(app.exec())
