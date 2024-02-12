@@ -155,7 +155,7 @@ def form_sample():
                         </html>'''
     elif request.method == 'POST':
         pprint(dict(request.form))
-        return "Форма отправлена"
+        return "Форма отф"
 
 
 if __name__ == '__main__':
