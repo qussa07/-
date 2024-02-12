@@ -11,13 +11,6 @@ def home(title):
     return render_template('base.html', title=title)
 
 
-@app.route('/promotion')
-def promotion():
-    return 'Человечество вырастает из детства.</br>' \
-           ' Человечеству мала одна планета.</br>' \
-           'Мы сделаем обитаемыми безжизненные пока планеты.</br>' \
-           'И начнем с Марса!Присоединяйся!' \
-           '<title> Привет, Марс!</title>'
 
 
 @app.route('/image_mars')
