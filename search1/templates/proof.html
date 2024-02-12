@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="alert alert-success" role="alert">Список профессий</h2>
+{% if prof == 'ol' %}
+<ol>
+    {% for item in proflist %}
+        <li>{{ item }}</li>
+
+        {% endfor %}
+    </ol>
+    {% elif prof == 'ul' %}
+    <ul>
+        {% for item in proflist %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="alert alert-danger" role="alert">Введите верные параметры</p>
+
+
+    {% endif %}
+    {% endblock %}

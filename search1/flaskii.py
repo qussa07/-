@@ -15,6 +15,14 @@ def home(title):
 def training(prof):
     return render_template('training.html', prof=prof)
 
+@app.route('/list_prof/<flag>')
+def abc(flag):
+    nng = ['инженер-исследователь', 'пилот', 'строитель', 'экзобиолог', 'врач',
+         'инженер по терраформированию', 'климатолог',
+         'специалист по радиационной защите', 'астрогеолог', 'гляциолог',
+         'инженер жизнеобеспечения', 'метеоролог', 'оператор марсохода', 'киберинженер',
+         'штурман', 'пилот дронов']
+    return render_template('proof.html', prof=flag, proflist=nng)
 
 
 @app.route('/image_mars')
