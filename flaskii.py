@@ -11,6 +11,10 @@ def home(title):
     return render_template('base.html', title=title)
 
 
+@app.route('/training/<prof>')
+def training(prof):
+    return render_template('training.html', prof=prof)
+
 
 
 @app.route('/image_mars')
