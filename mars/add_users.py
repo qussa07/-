@@ -19,3 +19,38 @@ db_sess = db_session.create_session()
 db_sess.add(user)
 db_sess.commit()
 
+user = User()
+user.surname = "Artem"
+user.name = "Maikov"
+user.age = 20
+user.position = "bothman"
+user.speciality = "teacher"
+user.address = "nose"
+user.email = "artem123@mars.org"
+db_sess = db_session.create_session()
+db_sess.add(user)
+db_sess.commit()
+
+user = User()
+user.surname = "Vasya"
+user.name = "Nikonorof"
+user.age = 22
+user.position = "cook"
+user.speciality = "boatswain"
+user.address = "tail"
+user.email = "vasya123@mars.org"
+db_sess = db_session.create_session()
+db_sess.add(user)
+db_sess.commit()
+
+user = User()
+user.surname = "Firsov"
+user.name = "Dmitry"
+user.age = 23
+user.position = "pilot"
+user.speciality = "flyer"
+user.address = "tail"
+user.email = "flyer332@mars.org"
+db_sess = db_session.create_session()
+db_sess.add(user)
+db_sess.commit()

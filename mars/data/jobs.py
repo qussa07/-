@@ -5,7 +5,7 @@ from sqlalchemy import orm
 
 
 class Jobs(SqlAlchemyBase):
-    __tablename__ = 'Jobs'
+    __tablename__ = 'jobs'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
@@ -19,4 +19,4 @@ class Jobs(SqlAlchemyBase):
                                    default=datetime.datetime.now)
     end_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                  default=datetime.datetime.now)
-    user = orm.relationship('User', back_populates='user')
+    user = orm.relationship('User')
