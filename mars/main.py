@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_manager, login_user, logout_user, lo
 from data import db_session
 from data.jobs import Jobs
 from data.work_forms import WorksForm
+from data.registration import RegForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -70,6 +71,27 @@ def add_job():
         db_sess.commit()
         return redirect('/jobs')
     return render_template('works.html', title='Добавление работы',
+                           form=form)
+
+@app.route('/register',  methods=['GET', 'POST'])
+def registration():
+    form = RegForm()
+    if form.validate_on_submit() and form.password.data == form.password_2.data:
+        db_sess = db_session.create_session()
+        user = User()
+        user.surname = form.surname.data
+        user.name = form.name.data
+        user.age = form.age.data
+        user.position = form.position.data
+        user.speciality = form.speciality.data
+        user.address = form.address.data
+        user.email = form.email.data
+        user.hashed_password = form.password.data
+        user.set_password(user.hashed_password)
+        db_sess.add(user)
+        db_sess.commit()
+        return redirect('/login')
+    return render_template('registration.html', title='Зарегистрироваться',
                            form=form)
 
 if __name__ == '__main__':
