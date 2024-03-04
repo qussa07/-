@@ -14,6 +14,8 @@ user.age = 21
 user.position = "captain"
 user.speciality = "research engineer"
 user.address = "module_1"
+user.hashed_password = '1111'
+user.set_password(user.hashed_password)
 user.email = "scott_chief@mars.org"
 db_sess = db_session.create_session()
 db_sess.add(user)
@@ -26,6 +28,8 @@ user.age = 20
 user.position = "bothman"
 user.speciality = "teacher"
 user.address = "nose"
+user.hashed_password = '1111'
+user.set_password(user.hashed_password)
 user.email = "artem123@mars.org"
 db_sess = db_session.create_session()
 db_sess.add(user)
@@ -38,6 +42,8 @@ user.age = 22
 user.position = "cook"
 user.speciality = "boatswain"
 user.address = "tail"
+user.hashed_password = '1111'
+user.set_password(user.hashed_password)
 user.email = "vasya123@mars.org"
 db_sess = db_session.create_session()
 db_sess.add(user)
@@ -50,6 +56,8 @@ user.age = 23
 user.position = "pilot"
 user.speciality = "flyer"
 user.address = "tail"
+user.hashed_password = '1111'
+user.set_password(user.hashed_password)
 user.email = "flyer332@mars.org"
 db_sess = db_session.create_session()
 db_sess.add(user)
