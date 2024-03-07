@@ -93,6 +93,43 @@ def registration():
         return redirect('/login')
     return render_template('registration.html', title='Зарегистрироваться',
                            form=form)
+@app.route('/work/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_work(id):
+    form = WorksForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        work = db_sess.query(Jobs).filter(User.id == id,
+                                          User.user == current_user
+                                          ).first()
+        if work:
+            form.team_leader.data = work.team_leader
+            form.job.data = work.job
+            form.work_size.data = work.work_size
+            form.collaborators.data = work.collaborators
+            form.is_finished.data = work.is_finished
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        work = db_sess.query(Jobs).filter(User.id == id,
+                                          User.user == current_user
+                                          ).first()
+        if work:
+            work.team_leader = form.team_leader.data
+            work.job = form.job.data
+            work.work_size = form.work_size.data
+            work.collaborators = form.collaborators.data
+            work.is_finished = form.is_finished.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('work_edit.html',
+                           title='Редактирование работы',
+                           form=form
+                           )
+
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')
