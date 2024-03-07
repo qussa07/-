@@ -7,6 +7,7 @@ from data import db_session
 from data.jobs import Jobs
 from data.work_forms import WorksForm
 from data.registration import RegForm
+from data.department import Depart
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -148,9 +149,10 @@ def edit_work(id):
                            form=form
                            )
 
+
 @app.route('/works_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
-def news_delete(id):
+def works_delete(id):
     db_sess = db_session.create_session()
     work = db_sess.query(Jobs).filter(Jobs.id == id,
                                       (Jobs.team_leader == current_user.id) | (current_user.id == 1)
@@ -161,6 +163,53 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/depart_edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_depart(id):
+    form = Depart()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        work = db_sess.query(Depart).filter(Depart.id == id,
+                                            (Depart.team_leader == current_user.id) | (current_user.id == 1)
+                                            ).first()
+        if work:
+            form.team_leader.data = work.team_leader
+            form.title.data = work.title
+            form.chief.data = work.chief
+            form.members.data = work.members
+            form.email.data = work.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        work = db_sess.query(Depart).filter(Depart.id == id,
+                                            (Depart.team_leader == current_user.id) | (current_user.id == 1)
+                                            ).first()
+        if work:
+            work.team_leader = form.team_leader.data
+            work.job = form.job.data
+            work.work_size = form.work_size.data
+            work.collaborators = form.collaborators.data
+            work.is_finished = form.is_finished.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('edit_depart.html',
+                           title='Редактирование работы',
+                           form=form
+                           )
+
+
+@app.route('/depart')
+def depart():
+    db_sess = db_session.create_session()
+
+    jobs = db_sess.query(Depart).all()
+
+    return render_template('deportaments.html', jobs=jobs)
 
 
 if __name__ == '__main__':
