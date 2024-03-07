@@ -26,6 +26,7 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
+
 @app.route('/jobs')
 def jobs():
     db_sess = db_session.create_session()
@@ -33,6 +34,7 @@ def jobs():
     jobs = db_sess.query(Jobs).all()
 
     return render_template('jobs.html', jobs=jobs)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -48,6 +50,7 @@ def login():
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -55,7 +58,7 @@ def logout():
     return redirect("/")
 
 
-@app.route('/add_jobs',  methods=['GET', 'POST'])
+@app.route('/add_jobs', methods=['GET', 'POST'])
 @login_required
 def add_job():
     form = WorksForm()
@@ -73,7 +76,8 @@ def add_job():
     return render_template('works.html', title='Добавление работы',
                            form=form)
 
-@app.route('/register',  methods=['GET', 'POST'])
+
+@app.route('/register', methods=['GET', 'POST'])
 def registration():
     form = RegForm()
     db_sess = db_session.create_session()
@@ -81,11 +85,11 @@ def registration():
     print([user.email for user in users])
     if form.validate_on_submit() and form.email.data in [user.email for user in users]:
         return render_template('registration.html', title='Зарегистрироваться',
-                           form=form, message='Существующая почта')
+                               form=form, message='Существующая почта')
     if form.validate_on_submit() and form.password.data != form.password_2.data:
         return render_template('registration.html', title='Зарегистрироваться',
                                form=form, message='разные пароли')
-    if form.validate_on_submit() and not(28 < form.age.data < 283):
+    if form.validate_on_submit() and not (28 < form.age.data < 283):
         return render_template('registration.html', title='Зарегистрироваться',
                                form=form, message='не подходите по возрасту')
     if form.validate_on_submit() and form.password.data == form.password_2.data:
@@ -105,7 +109,9 @@ def registration():
         return redirect('/login')
     return render_template('registration.html', title='Зарегистрироваться',
                            form=form)
-@app.route('/work/<int:id>', methods=['GET', 'POST'])
+
+
+@app.route('/works_edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_work(id):
     form = WorksForm()
@@ -125,7 +131,7 @@ def edit_work(id):
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         work = db_sess.query(Jobs).filter(Jobs.id == id,
-                                          (Jobs.team_leader == current_user.id | current_user.id == 1)
+                                          (Jobs.team_leader == current_user.id) | (current_user.id == 1)
                                           ).first()
         if work:
             work.team_leader = form.team_leader.data
@@ -141,6 +147,20 @@ def edit_work(id):
                            title='Редактирование работы',
                            form=form
                            )
+
+@app.route('/works_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    work = db_sess.query(Jobs).filter(Jobs.id == id,
+                                      (Jobs.team_leader == current_user.id) | (current_user.id == 1)
+                                      ).first()
+    if work:
+        db_sess.delete(work)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 if __name__ == '__main__':
