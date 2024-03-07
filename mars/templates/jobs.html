@@ -29,7 +29,18 @@
       <td class="table-danger" align="center">Is not finished</td>
       {% endif %}
     </tr>
-  </tbody>
+  <tr>
+  {% if current_user.is_authenticated and (current_user == item.user  or current_user.id == 1) %}
+    <div>
+        <a href="/work/{{ item.id }}" class="btn btn-warning">
+            Изменить
+        </a>
+        <a href="/news_delete/{{ item.id }}" class="btn btn-danger">
+            Удалить
+        </a>
+    </div>
+    {% endif %}
+  </tr>
 </table>
 {% endfor %}
 
