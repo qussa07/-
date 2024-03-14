@@ -4,7 +4,7 @@ from wtforms import BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
 
-class WorksForm(FlaskForm):
+class DepartForm(FlaskForm):
     team_leader = IntegerField('id лидера', validators=[DataRequired()])
     title = StringField('List of Departments', validators=[DataRequired()])
     chief = StringField('Chief', validators=[DataRequired()])

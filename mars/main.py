@@ -5,6 +5,7 @@ from data.login_form import LoginForm
 from flask_login import LoginManager, login_manager, login_user, logout_user, login_required, current_user
 from data.jobs import Jobs
 from data.work_forms import WorksForm
+from data.depart_forms import DepartForm
 from data.registration import RegForm
 from data.department import Depart
 from data import db_session, jobs_api
@@ -163,15 +164,29 @@ def works_delete(id):
     return redirect('/')
 
 
+@app.route('/depart_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def depart_delete(id):
+    db_sess = db_session.create_session()
+    work = db_sess.query(Depart).filter(Depart.id == id,
+                                    (Depart.team_leader == current_user.id) | (current_user.id == 1)
+                                      ).first()
+    if work:
+        db_sess.delete(work)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/depart')
+
 @app.route('/depart_edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_depart(id):
-    form = Depart()
+def depart_edit(id):
+    form = DepartForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
         work = db_sess.query(Depart).filter(Depart.id == id,
-                                            (Depart.team_leader == current_user.id) | (current_user.id == 1)
-                                            ).first()
+                                          (Depart.team_leader == current_user.id) | (current_user.id == 1)
+                                          ).first()
         if work:
             form.team_leader.data = work.team_leader
             form.title.data = work.title
@@ -183,16 +198,16 @@ def edit_depart(id):
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         work = db_sess.query(Depart).filter(Depart.id == id,
-                                            (Depart.team_leader == current_user.id) | (current_user.id == 1)
-                                            ).first()
+                                          (Depart.team_leader == current_user.id) | (current_user.id == 1)
+                                          ).first()
         if work:
             work.team_leader = form.team_leader.data
-            work.job = form.job.data
-            work.work_size = form.work_size.data
-            work.collaborators = form.collaborators.data
-            work.is_finished = form.is_finished.data
+            work.title = form.title.data
+            work.chief = form.chief.data
+            work.members = form.members.data
+            work.email = form.email.data
             db_sess.commit()
-            return redirect('/')
+            return redirect('/depart')
         else:
             abort(404)
     return render_template('edit_depart.html',
@@ -208,6 +223,24 @@ def depart():
     jobs = db_sess.query(Depart).all()
 
     return render_template('deportaments.html', jobs=jobs)
+
+@app.route('/add_depart', methods=['GET', 'POST'])
+@login_required
+def add_departs():
+    form = DepartForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        depart = Depart()
+        depart.team_leader = form.team_leader.data
+        depart.title = form.title.data
+        depart.chief = form.chief.data
+        depart.members = form.members.data
+        depart.email = form.email.data
+        db_sess.add(depart)
+        db_sess.commit()
+        return redirect('/depart')
+    return render_template('depart_add.html', title='Добавление работы',
+                           form=form)
 
 
 if __name__ == '__main__':
