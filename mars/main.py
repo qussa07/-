@@ -3,11 +3,11 @@ from data.users import User
 from flask import Flask
 from data.login_form import LoginForm
 from flask_login import LoginManager, login_manager, login_user, logout_user, login_required, current_user
-from data import db_session
 from data.jobs import Jobs
 from data.work_forms import WorksForm
 from data.registration import RegForm
 from data.department import Depart
+from data import db_session, jobs_api
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -31,9 +31,7 @@ def index():
 @app.route('/jobs')
 def jobs():
     db_sess = db_session.create_session()
-
     jobs = db_sess.query(Jobs).all()
-
     return render_template('jobs.html', jobs=jobs)
 
 
@@ -213,4 +211,5 @@ def depart():
 
 
 if __name__ == '__main__':
+    app.register_blueprint(jobs_api.blueprint)
     app.run(port=5000, host='127.0.0.1')
