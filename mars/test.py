@@ -21,3 +21,14 @@ print(post('http://127.0.0.1:5000/api/jobs',
                  'work_size': 1,
                  'is_finished': False}).json())
 
+
+print(requests.get('http://127.0.0.1:5000/api/v2/user').json())
+print(post('http://127.0.0.1:5000/api/jobs',
+           json={'surname': 'ishacovich',
+                 'name': 'ishak',
+                 'age': 122,
+                 'position': 'asdsad',
+                 'speciality': 'sdad',
+                 'address':'sadasdas',
+                 'email': 'q@2wqw',
+                 'passswird': 1}).json())

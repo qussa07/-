@@ -1,22 +1,30 @@
 from flask import Flask, url_for, render_template, redirect, abort, request
-from data.users import User
+from flask_restful import Api
+from mars.data.users import User
 from flask import Flask
-from data.login_form import LoginForm
+from mars.data.login_form import LoginForm
 from flask_login import LoginManager, login_manager, login_user, logout_user, login_required, current_user
-from data.jobs import Jobs
-from data.work_forms import WorksForm
-from data.depart_forms import DepartForm
-from data.registration import RegForm
-from data.department import Depart
-from data import db_session, jobs_api
+from mars.data.jobs import Jobs
+from mars.data.work_forms import WorksForm
+from mars.data.depart_forms import DepartForm
+from mars.data.registration import RegForm
+from mars.data.department import Depart
+from mars.data import db_session, jobs_api
+from mars.data import users_resource
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 db_session.global_init('db/mars_explorer.db')
 
+# для списка объектов
+api.add_resource(users_resource.UsersListResource, '/api/v2/user')
+
+# для одного объекта
+api.add_resource(users_resource.UsersResource, '/api/v2/user/<int:news_id>')
 
 @login_manager.user_loader
 def load_user(user_id):
