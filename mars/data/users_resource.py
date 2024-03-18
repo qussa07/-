@@ -1,8 +1,14 @@
 from flask_restful import reqparse, abort, Api, Resource
+from werkzeug.security import generate_password_hash
+
 from mars.data import db_session
 from mars.data.users import User
 from mars.data.reg_parse_user import parser
 from flask import jsonify
+
+
+def set_password(password):
+    return generate_password_hash(password)
 
 
 def abort_if_user_not_found(user_id):
@@ -34,10 +40,9 @@ class UsersListResource(Resource):
     def get(self):
         session = db_session.create_session()
         users = session.query(User).all()
-        print(users)
         return jsonify({'user': [{'id': user.id, 'surname': user.surname, 'name': user.name, 'age': user.age,
-                                 'position': user.position, 'speciality': user.speciality, 'address': user.address,
-                                 'email': user.email} for user in users]})
+                                  'position': user.position, 'speciality': user.speciality, 'address': user.address,
+                                  'email': user.email} for user in users]})
 
     def post(self):
         args = parser.parse_args()
@@ -51,7 +56,6 @@ class UsersListResource(Resource):
             address=args['address'],
             email=args['email'],
             hashed_password=set_password(args['hashed_password'])
-
         )
         session.add(user)
         session.commit()

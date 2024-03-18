@@ -21,10 +21,10 @@ login_manager.init_app(app)
 db_session.global_init('db/mars_explorer.db')
 
 # для списка объектов
-api.add_resource(users_resource.UsersListResource, '/api/v2/user')
+api.add_resource(users_resource.UsersListResource, '/api/v2/users')
 
 # для одного объекта
-api.add_resource(users_resource.UsersResource, '/api/v2/user/<int:news_id>')
+api.add_resource(users_resource.UsersResource, '/api/v2/user/<int:user_id>')
 
 @login_manager.user_loader
 def load_user(user_id):
