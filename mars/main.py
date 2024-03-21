@@ -10,7 +10,7 @@ from mars.data.depart_forms import DepartForm
 from mars.data.registration import RegForm
 from mars.data.department import Depart
 from mars.data import db_session, jobs_api
-from mars.data import users_resource
+from mars.data import users_resource, jobs_resource
 
 app = Flask(__name__)
 api = Api(app)
@@ -25,6 +25,8 @@ api.add_resource(users_resource.UsersListResource, '/api/v2/users')
 
 # для одного объекта
 api.add_resource(users_resource.UsersResource, '/api/v2/user/<int:user_id>')
+api.add_resource(jobs_resource.JobsResource, '/api/v2/job/<int:job_id>')
+api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
 
 @login_manager.user_loader
 def load_user(user_id):
