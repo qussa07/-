@@ -251,7 +251,11 @@ def add_departs():
         return redirect('/depart')
     return render_template('depart_add.html', title='Добавление работы',
                            form=form)
-
+@app.route('/distribution')
+def distribution():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).all()
+    return render_template('distribution.html', user=user)
 
 if __name__ == '__main__':
     app.register_blueprint(jobs_api.blueprint)

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Размещение по каютам</h2>
+    {% for item in user %}
+        {% if item.id == 1 %}
+            <h4> {{item.surname}} {{item.name}} Каюта № {{item.id}} - капитан корабля</h4>
+        {% else %}
+            <h4> {{item.surname}} {{item.name}} Каюта № {{item.id}}</h4>
+    {% endif %}
+    {% endfor %}
+
+{% endblock %}
